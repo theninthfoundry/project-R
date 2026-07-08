@@ -1,6 +1,6 @@
 import uuid
 import time
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, Any
 from RealityOS.kernel.reality_atom import RealityAtom
 from RealityOS.kernel.event_engine import EventEngine, Event, EventType
 from RealityOS.kernel.state_transition import StateTransitionNetwork
@@ -10,6 +10,8 @@ from RealityOS.kernel.causal_engine import CausalEngine
 from RealityOS.kernel.temporal_engine import TemporalEngine
 from RealityOS.fabric.energy_manager import EnergyManager, EnergyState
 from RealityOS.fabric.priority_scheduler import PriorityScheduler
+from RealityOS.kernel.cognitive_state import CognitiveState
+from RealityOS.kernel.evolution import AnalyticEvolution
 
 class CognitiveFabric:
     """
@@ -25,12 +27,14 @@ class CognitiveFabric:
         self.temporal_engine = TemporalEngine()
         self.energy_manager = EnergyManager()
         self.scheduler = PriorityScheduler()
+        self.evolution_engine = AnalyticEvolution()
         
         # Registry of runtimes
         self.runtimes: List[Any] = []
         
-        # Registry of all registered atoms
+        # Registry of all registered atoms and cognitive states
         self.atoms: Dict[uuid.UUID, RealityAtom] = {}
+        self.cognitive_states: Dict[str, CognitiveState] = {}
         
         # Subscribe scheduler to the Event Bus
         self.event_engine.bus.subscribe(self.on_event_published)
@@ -40,6 +44,13 @@ class CognitiveFabric:
 
     def register_runtime(self, runtime: Any):
         self.runtimes.append(runtime)
+
+    def register_cognitive_state(self, s: CognitiveState):
+        self.cognitive_states[s.uid] = s
+
+    def unregister_cognitive_state(self, uid: str):
+        if uid in self.cognitive_states:
+            del self.cognitive_states[uid]
 
     def register_atom(self, atom: RealityAtom):
         self.atoms[atom.id] = atom
@@ -68,6 +79,11 @@ class CognitiveFabric:
 
         # Optimize overall energy bounds
         self.energy_manager.optimize_budget(self.atoms)
+
+        # 1b. Step all registered Cognitive States
+        for cs in list(self.cognitive_states.values()):
+            # By default, we observe its current state value
+            self.evolution_engine.step(cs, cs.x)
 
         # 2. Pop next priority event and process
         if not self.scheduler.has_events():

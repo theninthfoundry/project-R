@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMP — Cognitive Agent Monitoring Platform</title>
+    <link rel="stylesheet" href="/dashboard/styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-logo">S</div>
+            <h1 class="brand-name">PROJECT S : CAMP</h1>
+        </div>
+        
+        <div class="sys-stats">
+            <div class="stat-item">
+                <span class="stat-label">System State:</span>
+                <span id="sys-health" class="stat-value" style="color: var(--success);">STABLE</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Memory:</span>
+                <span id="sys-mem" class="stat-value">0.0 MB</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Uptime:</span>
+                <span id="sys-uptime" class="stat-value">0s</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        
+        <!-- Left Panel: Monitored Agents -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Monitored Agents</h2>
+                <div class="stat-value" id="agent-count" style="font-size: 0.85rem; color: var(--accent);">0 Active</div>
+            </div>
+            <div class="panel-body" id="agent-list">
+                <div class="empty-state">No monitored agents active. Start the simulation to feed logs.</div>
+            </div>
+        </section>
+
+        <!-- Center Panel: Live Telemetry & Belief Momentum -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title" id="active-agent-title">Agent Telemetry: Select an Agent</h2>
+                <div class="stat-value" id="active-agent-energy" style="font-size: 0.85rem;">-</div>
+            </div>
+            <div class="panel-body" style="padding: 1.5rem; display: flex; flex-direction: column;">
+                
+                <!-- Metrics Summary Cards -->
+                <div class="detail-summary">
+                    <div class="summary-card">
+                        <div class="summary-card-title">Cost per Call</div>
+                        <div class="summary-card-value" id="metric-cost">$0.000</div>
+                        <div class="summary-card-belief" id="belief-cost">Belief: $0.000</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-title">Latency (ms)</div>
+                        <div class="summary-card-value" id="metric-latency">0 ms</div>
+                        <div class="summary-card-belief" id="belief-latency">Belief: 0 ms</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-title">Error Rate</div>
+                        <div class="summary-card-value" id="metric-error">0.00</div>
+                        <div class="summary-card-belief" id="belief-error">Belief: 0.00</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-title">Token Volume</div>
+                        <div class="summary-card-value" id="metric-tokens">0.0k</div>
+                        <div class="summary-card-belief" id="belief-tokens">Belief: 0.0k</div>
+                    </div>
+                </div>
+
+                <!-- Custom Momentum vs Raw Chart -->
+                <h3 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-secondary);">
+                    Belief Momentum Smoothing vs. Noisy Raw Jitter
+                </h3>
+                <div class="chart-container">
+                    <div class="visual-chart" id="history-chart">
+                        <!-- Chart bars dynamically loaded by JS -->
+                        <div class="empty-state" style="position: absolute;">No historical timeline data. Select an active agent.</div>
+                    </div>
+                </div>
+                
+                <!-- Provenance & Trust indicators -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                    <div>
+                        <strong style="color: var(--text-primary);">VERI Safety Constraints</strong>
+                        <ul id="constraint-list" style="margin-top: 0.5rem; padding-left: 1rem; line-height: 1.5;">
+                            <li>Select an agent to view policy limits</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong style="color: var(--text-primary);">Predictive Surprise Details</strong>
+                        <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                            <div>Current Surprise Value: <span id="surprise-value" class="stat-value" style="color: var(--accent); font-size: 0.8rem;">0.0000</span></div>
+                            <div id="confusion-flag" style="display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; text-align: center; background: rgba(255,255,255,0.05);">STABLE PROFILE</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Right Panel: Alerts & Health -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Active Alert Stream</h2>
+                <div class="stat-value" id="alert-count" style="font-size: 0.85rem; color: var(--error);">0 Alerts</div>
+            </div>
+            <div class="panel-body" id="alert-feed">
+                <div class="empty-state">No alerts triggered. System healthy.</div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/dashboard/app.js"></script>
+</body>
+</html>

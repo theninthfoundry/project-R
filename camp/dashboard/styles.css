@@ -1,0 +1,364 @@
+/* styles.css — Premium Glassmorphism UI Theme for CAMP */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+:root {
+    --bg-main: #060814;
+    --panel-bg: rgba(13, 17, 39, 0.45);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    
+    /* Semantic Colors */
+    --accent: #6366f1;         /* Indigo */
+    --accent-glow: rgba(99, 102, 241, 0.25);
+    --success: #10b981;        /* Emerald */
+    --success-glow: rgba(16, 185, 129, 0.2);
+    --warning: #f59e0b;        /* Amber */
+    --warning-glow: rgba(245, 158, 11, 0.2);
+    --error: #ef4444;          /* Rose */
+    --error-glow: rgba(239, 68, 68, 0.25);
+    
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--panel-border);
+    backdrop-filter: blur(8px);
+    background-color: rgba(6, 8, 20, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-logo {
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--error));
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(to right, #ffffff, var(--text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* System Stats */
+.sys-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat-item {
+    font-size: 0.85rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Layout Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 340px;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    height: calc(100vh - 80px);
+}
+
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.panel-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--panel-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Agent List Card Items */
+.agent-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.agent-card:hover, .agent-card.active {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+}
+
+.agent-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.agent-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.status-badge {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--success);
+}
+
+.status-badge.warning { background-color: var(--warning); }
+.status-badge.error { background-color: var(--error); }
+
+.agent-card-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.metric-mini {
+    display: flex;
+    justify-content: space-between;
+}
+
+.metric-mini-value {
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+}
+
+/* Center Panel - Main Monitoring details */
+.detail-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.summary-card-title {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.summary-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.summary-card-belief {
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-top: 0.25rem;
+}
+
+.chart-container {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+/* Simple inline CSS charts for real-time visualization */
+.visual-chart {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.chart-bar-container {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+}
+
+.chart-bar-raw {
+    width: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 2px 2px 0 0;
+}
+
+.chart-bar-belief {
+    width: 6px;
+    background-color: var(--accent);
+    border-radius: 3px 3px 0 0;
+    margin-left: -2px;
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Alert Feed */
+.alert-item {
+    background: rgba(239, 68, 68, 0.05);
+    border-left: 3px solid var(--error);
+    border-top: 1px solid var(--panel-border);
+    border-right: 1px solid var(--panel-border);
+    border-bottom: 1px solid var(--panel-border);
+    padding: 0.85rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+.alert-item.resolved {
+    background: rgba(16, 185, 129, 0.05);
+    border-left-color: var(--success);
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.alert-priority {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--error);
+    font-family: var(--font-mono);
+}
+
+.alert-item.resolved .alert-priority {
+    color: var(--success);
+}
+
+.alert-msg {
+    color: var(--text-primary);
+}
+
+.alert-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+    text-align: right;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.empty-state {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.9rem;
+}
