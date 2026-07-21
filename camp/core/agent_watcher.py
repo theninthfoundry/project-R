@@ -122,6 +122,8 @@ class AgentWatcher:
                 "energy": ix.capacity,  # capacity replaces energy budget representation
                 "tau": list(ix.precision),
                 "timestamp": time.time(),
-                "version": len(ix.evidence)
+                "version": len(ix.evidence),
+                "meta": ix.meta
             })
         return states
+

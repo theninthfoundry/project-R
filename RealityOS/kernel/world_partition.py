@@ -101,3 +101,10 @@ class WorldManager:
             if atom_id in p.atoms:
                 return p
         return None
+
+    def delete_partition(self, partition_id: uuid.UUID):
+        """Safely delete partition and prune global static storage cache to prevent leaks."""
+        if partition_id in self.partitions:
+            self.partitions.pop(partition_id)
+        if partition_id in WorldPartition._DISK_STORAGE:
+            WorldPartition._DISK_STORAGE.pop(partition_id)

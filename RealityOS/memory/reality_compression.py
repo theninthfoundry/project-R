@@ -15,7 +15,12 @@ class RealityCompressor:
         Simplifies a list of snapshots by removing values that lie
         within deviation_threshold of their preceding neighbors.
         """
-        snapshots = history.buffer
+        # Reconstruct chronological order from RingBuffer
+        if len(history.buffer) < history.capacity:
+            snapshots = list(history.buffer)
+        else:
+            snapshots = history.buffer[history.head:] + history.buffer[:history.head]
+
         if len(snapshots) <= 2:
             return list(snapshots)
 

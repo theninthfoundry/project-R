@@ -207,8 +207,11 @@ class Universe:
         # Merge constraints
         for name, c_fn in self.engine.constraints.items():
             merged.apply_constraint(name, c_fn)
+            
+        offset = len(self.states)
         for name, c_fn in other.engine.constraints.items():
-            merged.apply_constraint(f"merged_{name}", c_fn)
+            shifted_fn = lambda G, fn=c_fn, o=offset: fn(G[o:])
+            merged.apply_constraint(f"merged_{name}", shifted_fn)
             
         return merged
 

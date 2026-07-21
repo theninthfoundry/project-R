@@ -28,21 +28,26 @@ self_model = SelfModel()
 class ConnectionManager:
     def __init__(self):
         self.active_connections: Set[WebSocket] = set()
+        self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        self.active_connections.add(websocket)
+        async with self._lock:
+            self.active_connections.add(websocket)
 
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
+    async def disconnect(self, websocket: WebSocket):
+        async with self._lock:
+            if websocket in self.active_connections:
+                self.active_connections.remove(websocket)
 
     async def broadcast(self, message: dict):
-        for connection in list(self.active_connections):
+        async with self._lock:
+            targets = list(self.active_connections)
+        for connection in targets:
             try:
                 await connection.send_json(message)
             except Exception:
-                self.disconnect(connection)
+                await self.disconnect(connection)
 
 manager = ConnectionManager()
 
@@ -177,7 +182,7 @@ async def websocket_endpoint(websocket: WebSocket):
             # Keep connection alive, receive client messages if any
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
 
 # --- Aether Field Kernel Integration ---
 from RealityOS.kernel.field_kernel import AetherFieldKernel

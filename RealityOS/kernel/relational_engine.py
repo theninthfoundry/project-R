@@ -220,8 +220,16 @@ class RelationalEngine:
         new_size = self.size + other.size
         composed = RelationalEngine(size=new_size, eta=self.eta, alpha_dual=self.alpha_dual)
         composed.G = self.G + other.G
+        
+        # Self's constraints point to 0..self.size-1, which are intact in composed.G
         composed.constraints.update(self.constraints)
-        composed.constraints.update(other.constraints)
+        
+        # Shift other's constraints by self.size offset using default parameters to bind variables
+        offset = self.size
+        for name, fn in other.constraints.items():
+            shifted_fn = lambda G, c_fn=fn, o=offset: c_fn(G[o:])
+            composed.constraints[name] = shifted_fn
+            
         composed.lambdas.update(self.lambdas)
         composed.lambdas.update(other.lambdas)
         return composed
