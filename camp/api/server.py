@@ -179,6 +179,90 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
+# --- Aether Field Kernel Integration ---
+from RealityOS.kernel.field_kernel import AetherFieldKernel
+from pydantic import BaseModel
+
+field_kernel = AetherFieldKernel(size=50)
+
+class FieldObserveRequest(BaseModel):
+    x: int
+    y: int
+    value: float
+
+class FieldObstacleRequest(BaseModel):
+    x: int
+    y: int
+    radius: float
+
+class FieldSourceRequest(BaseModel):
+    x: int
+    y: int
+    value: float
+
+class DiffuseRequest(BaseModel):
+    damping: float = 0.02
+    wave_speed: float = 0.4
+
+class StabilizeRequest(BaseModel):
+    iterations: int = 15
+
+class DecayRequest(BaseModel):
+    rate: float = 0.01
+
+@app.get("/api/field/state")
+async def get_field_state():
+    return {
+        "size": field_kernel.size,
+        "u": field_kernel.u,
+        "conductance": field_kernel.conductance,
+        "sources": [{"x": k[0], "y": k[1], "value": v} for k, v in field_kernel.sources.items()]
+    }
+
+@app.post("/api/field/observe")
+async def post_field_observe(req: FieldObserveRequest):
+    field_kernel.observe(req.x, req.y, req.value)
+    return {"status": "success"}
+
+@app.post("/api/field/obstacle")
+async def post_field_obstacle(req: FieldObstacleRequest):
+    field_kernel.add_obstacle(req.x, req.y, req.radius)
+    return {"status": "success"}
+
+@app.post("/api/field/source")
+async def post_field_source(req: FieldSourceRequest):
+    field_kernel.set_source(req.x, req.y, req.value)
+    return {"status": "success"}
+
+@app.post("/api/field/diffuse")
+async def post_field_diffuse(req: DiffuseRequest):
+    field_kernel.diffuse(damping=req.damping, wave_speed=req.wave_speed)
+    return {"status": "success"}
+
+@app.post("/api/field/stabilize")
+async def post_field_stabilize(req: StabilizeRequest):
+    field_kernel.stabilize(iterations=req.iterations)
+    return {"status": "success"}
+
+@app.post("/api/field/decay")
+async def post_field_decay(req: DecayRequest):
+    field_kernel.decay(rate=req.rate)
+    return {"status": "success"}
+
+@app.get("/api/field/measure")
+async def get_field_measure():
+    return field_kernel.measure()
+
+@app.post("/api/field/reset")
+async def post_field_reset():
+    field_kernel.u = [[0.0] * field_kernel.size for _ in range(field_kernel.size)]
+    field_kernel.v = [[0.0] * field_kernel.size for _ in range(field_kernel.size)]
+    field_kernel.clear_sources()
+    field_kernel.clear_obstacles()
+    field_kernel.info_gain = 0.0
+    field_kernel.compute_spent = 0.0
+    return {"status": "success"}
+
 # --- Serving Dashboard Static Files ---
 
 # Redirect root to dashboard page

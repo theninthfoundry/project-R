@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether — Self-Organizing Field Sandbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #090d16;
+            --bg-card: #111726;
+            --bg-border: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #d946ef;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--bg-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .app-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            overflow: hidden;
+        }
+
+        .panel {
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--bg-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel.right {
+            border-right: none;
+            border-left: 1px solid var(--bg-border);
+        }
+
+        .panel-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--bg-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .panel-body {
+            flex: 1;
+            padding: 1.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Controls styling */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent-cyan);
+            background: var(--bg-border);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        button {
+            background-color: var(--bg-border);
+            color: var(--text-primary);
+            border: 1px solid transparent;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background-color: rgba(255,255,255,0.05);
+            border-color: var(--accent-cyan);
+        }
+
+        button.active {
+            background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(217,70,239,0.2));
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        button.danger {
+            border-color: rgba(244,63,94,0.3);
+        }
+
+        button.danger:hover {
+            background-color: rgba(244,63,94,0.1);
+            border-color: var(--accent-rose);
+            color: var(--accent-rose);
+        }
+
+        /* Canvas workspace */
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-deep);
+            position: relative;
+            padding: 2rem;
+        }
+
+        .canvas-container {
+            border: 2px solid var(--bg-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            background: #000;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            cursor: crosshair;
+            image-rendering: pixelated;
+        }
+
+        /* Metric cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .metric-card {
+            background-color: rgba(255,255,255,0.02);
+            border: 1px solid var(--bg-border);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .metric-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .metric-efficiency {
+            color: var(--accent-emerald);
+        }
+
+        .metric-entropy {
+            color: var(--accent-purple);
+        }
+
+        .metric-potential {
+            color: var(--accent-rose);
+        }
+
+        /* Terminal styling */
+        .terminal-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--bg-border);
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .terminal-header {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid var(--bg-border);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .terminal-logs {
+            flex: 1;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .log-entry {
+            line-height: 1.4;
+        }
+
+        .log-entry.command {
+            color: var(--accent-cyan);
+        }
+
+        .log-entry.metric {
+            color: var(--accent-pink);
+        }
+
+        .log-entry.system {
+            color: var(--accent-emerald);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <span class="logo">🌌 AETHER</span>
+            <span class="title">Field Sandbox</span>
+        </div>
+        <div class="nav-links">
+            <a href="/dashboard/index.html">← Back to Agent Observatory</a>
+        </div>
+    </header>
+
+    <div class="app-grid">
+        <!-- Left Panel: Control Center -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Substrate Controls</h2>
+            </div>
+            <div class="panel-body">
+                <!-- Action Modes -->
+                <div class="control-group">
+                    <label>Interaction Mode</label>
+                    <div class="btn-group">
+                        <button id="mode-observe" class="active">💥 Observe (Pulse Disturbance)</button>
+                        <button id="mode-source">🔋 Fixed Potential Source</button>
+                        <button id="mode-sink">🕳️ Fixed Potential Sink</button>
+                        <button id="mode-obstacle">🚧 Draw Obstacle Grid</button>
+                    </div>
+                </div>
+
+                <!-- Simulation Params -->
+                <div class="control-group">
+                    <label>Wave Damping (Dissipation)</label>
+                    <div class="slider-container">
+                        <input type="range" id="param-damping" min="0.00" max="0.10" step="0.005" value="0.02">
+                        <span class="slider-val" id="val-damping">0.020</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Wave Propagation Speed (c)</label>
+                    <div class="slider-container">
+                        <input type="range" id="param-speed" min="0.10" max="0.80" step="0.05" value="0.40">
+                        <span class="slider-val" id="val-speed">0.400</span>
+                    </div>
+                </div>
+
+                <!-- Operational Solvers -->
+                <div class="control-group">
+                    <label>Substrate Dynamics</label>
+                    <div class="btn-group">
+                        <button id="btn-diffuse" class="active">🌊 Continuous Wave Evolution</button>
+                        <button id="btn-stabilize">⚖️ Laplace Field Relaxation</button>
+                    </div>
+                </div>
+
+                <!-- Operations -->
+                <div class="control-group" style="margin-top: auto;">
+                    <button id="btn-reset" class="danger">🗑️ Clear Disturbance Field</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Center Workspace: Heat Manifold Canvas -->
+        <section class="workspace">
+            <div class="canvas-container">
+                <canvas id="field-canvas" width="500" height="500"></canvas>
+            </div>
+            <div style="margin-top: 1rem; text-align: center; color: var(--text-secondary); font-size: 0.85rem;">
+                <p>💡 Click on the canvas to inject energy disturbances. Drag to draw obstacles or sources.</p>
+                <p style="margin-top: 0.25rem; font-size: 0.75rem;">ACN Field Solver relaxation steps execute automatically at 30 FPS.</p>
+            </div>
+        </section>
+
+        <!-- Right Panel: Thermodynamics & API console -->
+        <section class="panel right">
+            <div class="panel-header">
+                <h2 class="panel-title">Thermodynamics</h2>
+            </div>
+            <div class="panel-body" style="padding-bottom: 0;">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-title">Potential Energy (U)</span>
+                        <span class="metric-value metric-potential" id="stat-potential">0.0000</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Information Entropy (H)</span>
+                        <span class="metric-value metric-entropy" id="stat-entropy">0.0000</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Metabolic Efficiency (M)</span>
+                        <span class="metric-value metric-efficiency" id="stat-metabolism">0.0000</span>
+                    </div>
+                    <div class="metric-card" style="padding: 0.75rem 1rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
+                            <span>Compute Spent:</span>
+                            <span id="stat-compute" style="font-family:var(--font-mono);">0.0k FLOPs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Console Logs -->
+            <div class="terminal-panel">
+                <div class="terminal-header">Aether API Instructions Log</div>
+                <div class="terminal-logs" id="terminal-logs">
+                    <div class="log-entry system">Initializing AetherFieldKernel... Grid size: 50x50.</div>
+                    <div class="log-entry command">aether.clear_obstacles()</div>
+                    <div class="log-entry command">aether.clear_sources()</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/dashboard/field_sandbox.js"></script>
+</body>
+</html>
